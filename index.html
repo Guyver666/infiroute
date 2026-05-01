@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#1a0933"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Infiroute"/>
 <title>Infiroute</title>
-<link rel="manifest" href="manifest.json"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -23,30 +21,25 @@
   --radius:14px;--radius-sm:10px;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);}
-
-/* PIN SCREEN */
 #pin-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
 #pin-screen.hidden{display:none}
 .pin-logo{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--violet3),var(--bg3));border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 40px rgba(212,168,67,0.25);}
 .pin-logo-text{font-family:'Cinzel',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--gold2),var(--rose2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .pin-title{font-family:'Cinzel',serif;font-size:22px;font-weight:600;color:var(--gold2);margin-bottom:4px;letter-spacing:1px;}
-.pin-sub{font-size:13px;color:var(--text2);margin-bottom:36px;}
+.pin-sub{font-size:13px;color:var(--text2);margin-bottom:36px;text-align:center;}
 .pin-dots{display:flex;gap:14px;margin-bottom:32px;}
 .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all .2s;}
 .pin-dot.filled{background:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(212,168,67,0.5);}
 .pin-dot.error{background:var(--rose);border-color:var(--rose);}
-.pin-label{font-size:13px;color:var(--text2);margin-bottom:28px;min-height:18px;}
+.pin-label{font-size:13px;color:#f87171;margin-bottom:28px;min-height:18px;text-align:center;}
 .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:240px;}
-.pin-key{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-size:22px;font-weight:500;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;font-family:'DM Sans',sans-serif;}
+.pin-key{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-size:22px;font-weight:500;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;}
 .pin-key:active{background:var(--bg4);border-color:var(--gold);transform:scale(0.95);}
 .pin-key.del{font-size:18px;color:var(--text2);}
 .pin-key.empty{background:transparent;border:none;cursor:default;}
-.pin-setup-hint{font-size:11px;color:var(--text3);margin-top:20px;text-align:center;line-height:1.6;}
-
-/* MAIN APP */
+.pin-hint{font-size:11px;color:var(--text3);margin-top:20px;text-align:center;line-height:1.6;max-width:260px;}
 #app{height:100%;display:flex;flex-direction:column;}
 #app.hidden{display:none}
-
 .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .h-logo{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--violet3),var(--bg3));border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .h-logo-text{font-family:'Cinzel',serif;font-size:13px;font-weight:700;background:linear-gradient(135deg,var(--gold2),var(--rose2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
@@ -54,26 +47,28 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .h-name{font-family:'Cinzel',serif;font-size:16px;font-weight:600;color:var(--gold2);letter-spacing:.5px;}
 .h-sub{font-size:11px;color:var(--text2);margin-top:1px;}
 .lock-btn{background:none;border:none;color:var(--text3);cursor:pointer;padding:6px;font-size:18px;}
-
 .nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .nav-btn{flex:1;padding:11px 0;font-size:12px;font-weight:500;color:var(--text2);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .nav-btn.active{color:var(--gold2);border-bottom-color:var(--gold);}
-
 .screens{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.screen{display:none;padding:16px;padding-bottom:24px;}
+.screen{display:none;padding:16px;padding-bottom:32px;}
 .screen.active{display:block;}
-
-/* SEARCH */
-.search-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
 .card-label{font-size:10px;font-weight:600;color:var(--gold3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
 .main-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
 .main-input:focus{border-color:var(--gold);}
 .main-input::placeholder{color:var(--text3);}
-.search-btn{width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,var(--violet),var(--rose3));border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.3px;transition:opacity .2s;}
-.search-btn:active{opacity:.85;}
+.btn-primary{width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,var(--violet),var(--rose3));border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+.btn-primary:active{opacity:.85;}
+.btn-add{width:100%;padding:13px;background:linear-gradient(135deg,var(--rose3),var(--violet));border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;}
+.btn-add:active{opacity:.85;}
+.btn-export{width:100%;padding:13px;background:rgba(160,120,48,0.18);border:1px solid var(--gold3);border-radius:var(--radius-sm);color:var(--gold2);font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
+.btn-export:active{opacity:.8;}
+.btn-import{width:100%;padding:13px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.4);border-radius:var(--radius-sm);color:var(--violet2);font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
+.btn-import:active{opacity:.8;}
+.btn-pin{width:100%;padding:12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:var(--radius-sm);color:var(--violet2);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
+.btn-danger{width:100%;padding:12px;background:rgba(180,30,60,0.12);border:1px solid rgba(220,60,60,0.3);border-radius:var(--radius-sm);color:#f87171;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .geo-status{font-size:11px;color:var(--gold);margin-top:8px;display:none;text-align:center;}
-
-/* RESULTS */
 .result-ok{background:rgba(34,120,60,0.12);border:1px solid rgba(34,180,60,0.35);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
 .result-ko{background:rgba(180,30,60,0.1);border:1px solid rgba(220,60,60,0.3);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
 .result-warn{background:rgba(180,130,0,0.1);border:1px solid rgba(220,170,0,0.3);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
@@ -94,22 +89,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .pat-badge{margin-left:auto;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;}
 .badge-ok{background:rgba(34,180,60,0.15);color:#4ade80;}
 .badge-ref{background:rgba(124,58,237,0.2);color:var(--violet2);}
-
-/* PATIENTS */
-.add-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
 .field{margin-bottom:12px;}
 .field-label{font-size:10px;font-weight:600;color:var(--gold3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;display:block;}
 .field-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
 .field-input:focus{border-color:var(--rose);}
 .field-input::placeholder{color:var(--text3);}
-.add-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--rose3),var(--violet));border:none;border-radius:var(--radius-sm);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;}
-.add-btn:active{opacity:.85;}
-
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .stat-c{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
 .stat-n{font-size:26px;font-weight:600;color:var(--gold2);}
 .stat-l{font-size:11px;color:var(--text2);margin-top:3px;}
-
 .sec-title{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;}
 .pat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:13px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .pat-card-info{flex:1;min-width:0;}
@@ -120,39 +108,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .empty-state{text-align:center;padding:48px 20px;color:var(--text3);}
 .empty-ico{font-size:44px;margin-bottom:14px;opacity:.4;}
 .empty-txt{font-size:13px;line-height:1.6;}
-
-/* SETTINGS */
-.setting-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
 .setting-row{display:flex;align-items:center;justify-content:space-between;}
 .setting-lbl{font-size:13px;color:var(--text2);}
-.setting-val{font-size:13px;font-weight:600;color:var(--gold2);}
 .seuil-input{width:70px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--gold2);font-size:15px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;font-weight:600;}
 .seuil-input:focus{border-color:var(--gold);}
-.setting-hint{font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6;}
-.danger-btn{width:100%;padding:12px;background:rgba(180,30,60,0.12);border:1px solid rgba(220,60,60,0.3);border-radius:var(--radius-sm);color:#f87171;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.danger-btn:active{opacity:.8;}
-.pin-change-btn{width:100%;padding:12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:var(--radius-sm);color:var(--violet2);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border2);border-radius:24px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;}
+.hint{font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border2);border-radius:24px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:all .3s;z-index:9999;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- PIN SCREEN -->
 <div id="pin-screen">
   <div class="pin-logo"><span class="pin-logo-text">PC</span></div>
   <div class="pin-title">Infiroute</div>
   <div class="pin-sub" id="pin-sub">Entrez votre code PIN</div>
-  <div class="pin-dots" id="pin-dots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
   </div>
   <div class="pin-label" id="pin-label"></div>
-  <div class="pin-grid" id="pin-grid">
+  <div class="pin-grid">
     <div class="pin-key" onclick="pinKey('1')">1</div>
     <div class="pin-key" onclick="pinKey('2')">2</div>
     <div class="pin-key" onclick="pinKey('3')">3</div>
@@ -166,10 +142,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
     <div class="pin-key" onclick="pinKey('0')">0</div>
     <div class="pin-key del" onclick="pinDel()">⌫</div>
   </div>
-  <div class="pin-setup-hint" id="pin-setup-hint"></div>
+  <div class="pin-hint" id="pin-hint"></div>
 </div>
 
-<!-- MAIN APP -->
 <div id="app" class="hidden">
   <div class="header">
     <div class="h-logo"><span class="h-logo-text">PC</span></div>
@@ -177,7 +152,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
       <div class="h-name">Infiroute</div>
       <div class="h-sub">Transport médical — Réunion</div>
     </div>
-    <button class="lock-btn" onclick="lockApp()" title="Verrouiller">🔒</button>
+    <button class="lock-btn" onclick="lockApp()">🔒</button>
   </div>
   <div class="nav">
     <button class="nav-btn active" onclick="showScreen('recherche',this)">Recherche</button>
@@ -186,31 +161,29 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
   </div>
   <div class="screens">
 
-    <!-- RECHERCHE -->
     <div id="screen-recherche" class="screen active">
-      <div class="search-card">
+      <div class="card">
         <div class="card-label">Nouvelle prise en charge</div>
-        <input class="main-input" id="new-addr" placeholder="Ex: 12 rue des Fleurs, Saint-Denis" />
+        <input class="main-input" id="new-addr" placeholder="Ex: 12 rue des Fleurs, Saint-Denis"/>
         <div class="geo-status" id="geo-status">Localisation en cours...</div>
-        <button class="search-btn" onclick="doSearch()">Analyser l'adresse →</button>
+        <button class="btn-primary" onclick="doSearch()">Analyser l'adresse →</button>
       </div>
       <div id="result-area"></div>
     </div>
 
-    <!-- PATIENTS -->
     <div id="screen-patients" class="screen">
-      <div class="add-card">
+      <div class="card">
         <div class="card-label">Ajouter un patient</div>
         <div class="field">
           <label class="field-label">Nom complet</label>
-          <input class="field-input" id="pat-name" placeholder="Nom Prénom" />
+          <input class="field-input" id="pat-name" placeholder="Nom Prénom"/>
         </div>
         <div class="field">
           <label class="field-label">Adresse</label>
-          <input class="field-input" id="pat-addr" placeholder="12 rue des Fleurs, Saint-Denis" />
+          <input class="field-input" id="pat-addr" placeholder="12 rue des Fleurs, Saint-Denis"/>
         </div>
-        <div class="geo-status" id="add-geo-status">Localisation en cours...</div>
-        <button class="add-btn" onclick="addPatient()">+ Ajouter le patient</button>
+        <div class="geo-status" id="add-geo-status"></div>
+        <button class="btn-add" onclick="addPatient()">+ Ajouter le patient</button>
       </div>
       <div class="stats-row">
         <div class="stat-c"><div class="stat-n" id="stat-count">0</div><div class="stat-l">Patients enregistrés</div></div>
@@ -220,295 +193,278 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
       <div id="patients-list"></div>
     </div>
 
-    <!-- REGLAGES -->
     <div id="screen-reglages" class="screen">
-      <div class="sec-title" style="margin-bottom:10px;">Seuil de distance</div>
-      <div class="setting-card">
+
+      <div class="sec-title" style="margin-bottom:10px;">💾 Sauvegarde &amp; transfert</div>
+      <div class="card">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;">Exportez votre base pour la sauvegarder ou la transférer sur un autre appareil.</div>
+        <button class="btn-export" onclick="exportData()">📤 &nbsp;Exporter la base patients</button>
+        <button class="btn-import" onclick="importData()">📥 &nbsp;Importer une sauvegarde</button>
+        <div class="hint">Le fichier .json exporté contient tous vos patients avec leurs coordonnées GPS. Conservez-le en lieu sûr.</div>
+      </div>
+
+      <div class="sec-title" style="margin-bottom:10px;">📍 Seuil de distance</div>
+      <div class="card">
         <div class="setting-row">
           <span class="setting-lbl">Considéré "sur le trajet" si</span>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:13px;color:var(--text2);">&lt;</span>
-            <input class="seuil-input" id="seuil-input" type="number" min="1" max="50" value="5" onchange="saveSeuil(this.value)" />
+            <input class="seuil-input" id="seuil-input" type="number" min="1" max="50" value="5" onchange="saveSeuil(this.value)"/>
             <span style="font-size:13px;color:var(--text2);">km</span>
           </div>
         </div>
-        <div class="setting-hint">Si la nouvelle adresse est à moins de cette distance d'un patient existant, elle est considérée rentable.</div>
+        <div class="hint">Si la nouvelle adresse est à moins de cette distance d'un patient, elle est considérée rentable.</div>
       </div>
-      <div class="sec-title" style="margin-bottom:10px;">Sécurité</div>
-      <div class="setting-card">
-        <button class="pin-change-btn" onclick="startPinChange()">Modifier le code PIN</button>
-        <div class="setting-hint">Le PIN protège l'accès à vos données patients.</div>
+
+      <div class="sec-title" style="margin-bottom:10px;">🔒 Sécurité</div>
+      <div class="card">
+        <button class="btn-pin" onclick="startPinChange()">Modifier le code PIN</button>
+        <div class="hint">Le PIN protège l'accès à vos données patients à chaque ouverture.</div>
       </div>
-      <div class="sec-title" style="margin-bottom:10px;">Données</div>
-      <div class="setting-card">
-        <div class="setting-hint" style="margin-bottom:14px;">Toutes les données sont stockées localement sur votre téléphone. Aucun serveur externe.</div>
-        <button class="danger-btn" onclick="clearAll()">Effacer toutes les données patients</button>
+
+      <div class="sec-title" style="margin-bottom:10px;">🗑 Données</div>
+      <div class="card">
+        <div class="hint" style="margin-bottom:14px;">Toutes les données sont stockées localement sur votre téléphone. Aucun serveur externe.</div>
+        <button class="btn-danger" onclick="clearAll()">Effacer toutes les données patients</button>
       </div>
-      <div style="text-align:center;margin-top:24px;">
-        <div style="font-size:10px;color:var(--text3);letter-spacing:1px;">INFIROUTE v1.0 — Réunion</div>
+
+      <div style="text-align:center;margin-top:28px;">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1px;">INFIROUTE v1.1 — Réunion</div>
         <div style="font-size:10px;color:var(--text3);margin-top:4px;">Données 100% locales · OpenStreetMap</div>
       </div>
     </div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'infiroute_patients';
-const PIN_KEY = 'infiroute_pin';
-const SEUIL_KEY = 'infiroute_seuil';
+const SK = 'infiroute_patients', PK = 'infiroute_pin', SEK = 'infiroute_seuil';
+let patients = JSON.parse(localStorage.getItem(SK) || '[]');
+let seuil = parseFloat(localStorage.getItem(SEK) || '5');
+let savedPin = localStorage.getItem(PK) || '';
+let pinBuf = '', pinMode = 'unlock', pinTemp = '';
 
-let patients = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-let seuil = parseFloat(localStorage.getItem(SEUIL_KEY) || '5');
-let savedPin = localStorage.getItem(PIN_KEY) || '';
-let pinBuffer = '';
-let pinMode = 'unlock'; // unlock | setup1 | setup2 | change1 | change2
-let pinTemp = '';
-
+// PIN
 function initPin() {
   if (!savedPin) {
     pinMode = 'setup1';
     document.getElementById('pin-sub').textContent = 'Créez votre code PIN';
-    document.getElementById('pin-setup-hint').textContent = 'Choisissez un code PIN à 4 chiffres\npour protéger vos données patients.';
+    document.getElementById('pin-hint').textContent = 'Choisissez un code à 4 chiffres pour protéger vos données patients.';
   } else {
     pinMode = 'unlock';
     document.getElementById('pin-sub').textContent = 'Entrez votre code PIN';
-    document.getElementById('pin-setup-hint').textContent = '';
+    document.getElementById('pin-hint').textContent = '';
   }
-  pinBuffer = '';
-  updateDots();
+  pinBuf = ''; updateDots();
 }
 
-function updateDots(state) {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById('d' + i);
+function updateDots(cls) {
+  for (let i=0;i<4;i++) {
+    const d = document.getElementById('d'+i);
     d.className = 'pin-dot';
-    if (i < pinBuffer.length) d.classList.add(state || 'filled');
+    if (i < pinBuf.length) d.classList.add(cls || 'filled');
   }
 }
 
 function pinKey(k) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += k;
-  updateDots();
-  if (pinBuffer.length === 4) {
-    setTimeout(() => handlePinComplete(), 150);
+  if (pinBuf.length >= 4) return;
+  pinBuf += k; updateDots();
+  if (pinBuf.length === 4) setTimeout(handlePin, 150);
+}
+
+function pinDel() { if (pinBuf.length) { pinBuf = pinBuf.slice(0,-1); updateDots(); } }
+
+function pinErr(msg, cb) {
+  updateDots('error');
+  document.getElementById('pin-label').textContent = msg;
+  setTimeout(() => { pinBuf = ''; cb(); updateDots(); document.getElementById('pin-label').textContent = ''; }, 900);
+}
+
+function handlePin() {
+  const lbl = id => document.getElementById('pin-sub').textContent = id;
+  if (pinMode==='unlock') {
+    pinBuf===savedPin ? unlockApp() : pinErr('Code incorrect. Réessayez.', ()=>{});
+  } else if (pinMode==='setup1') {
+    pinTemp=pinBuf; pinBuf=''; pinMode='setup2'; lbl('Confirmez votre code PIN'); updateDots();
+  } else if (pinMode==='setup2') {
+    pinBuf===pinTemp ? (savePin(pinBuf), unlockApp(), showToast('PIN créé ✓'))
+      : pinErr('Les codes ne correspondent pas.', ()=>{ pinMode='setup1'; pinTemp=''; lbl('Créez votre code PIN'); });
+  } else if (pinMode==='change1') {
+    pinBuf===savedPin ? (pinBuf='', pinTemp='', pinMode='change2', lbl('Nouveau code PIN'), updateDots())
+      : pinErr('Code actuel incorrect.', ()=>{});
+  } else if (pinMode==='change2') {
+    pinTemp=pinBuf; pinBuf=''; pinMode='confirm-change'; lbl('Confirmez le nouveau PIN'); updateDots();
+  } else if (pinMode==='confirm-change') {
+    pinBuf===pinTemp ? (savePin(pinBuf), unlockApp(), showToast('PIN modifié ✓'))
+      : pinErr('Les codes ne correspondent pas.', ()=>{ pinTemp=''; pinMode='change2'; lbl('Nouveau code PIN'); });
   }
 }
 
-function pinDel() {
-  if (pinBuffer.length > 0) { pinBuffer = pinBuffer.slice(0, -1); updateDots(); }
+function savePin(p) { savedPin=p; localStorage.setItem(PK,p); }
+function unlockApp() {
+  document.getElementById('pin-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  pinBuf=''; pinMode='unlock';
 }
-
-function handlePinComplete() {
-  if (pinMode === 'unlock') {
-    if (pinBuffer === savedPin) {
-      document.getElementById('pin-screen').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-      pinBuffer = '';
-    } else {
-      updateDots('error');
-      document.getElementById('pin-label').textContent = 'Code incorrect. Réessayez.';
-      setTimeout(() => { pinBuffer = ''; updateDots(); document.getElementById('pin-label').textContent = ''; }, 800);
-    }
-  } else if (pinMode === 'setup1') {
-    pinTemp = pinBuffer;
-    pinBuffer = '';
-    pinMode = 'setup2';
-    document.getElementById('pin-sub').textContent = 'Confirmez votre code PIN';
-    document.getElementById('pin-label').textContent = '';
-    updateDots();
-  } else if (pinMode === 'setup2') {
-    if (pinBuffer === pinTemp) {
-      savedPin = pinBuffer;
-      localStorage.setItem(PIN_KEY, savedPin);
-      document.getElementById('pin-screen').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-      pinBuffer = ''; pinMode = 'unlock';
-      showToast('PIN créé avec succès');
-    } else {
-      updateDots('error');
-      document.getElementById('pin-label').textContent = 'Les codes ne correspondent pas.';
-      setTimeout(() => { pinBuffer = ''; pinMode = 'setup1'; pinTemp = ''; updateDots(); document.getElementById('pin-sub').textContent = 'Créez votre code PIN'; document.getElementById('pin-label').textContent = ''; }, 900);
-    }
-  } else if (pinMode === 'change1') {
-    if (pinBuffer === savedPin) {
-      pinTemp = ''; pinBuffer = ''; pinMode = 'change2';
-      document.getElementById('pin-sub').textContent = 'Nouveau code PIN';
-      document.getElementById('pin-label').textContent = '';
-      updateDots();
-    } else {
-      updateDots('error');
-      document.getElementById('pin-label').textContent = 'Code actuel incorrect.';
-      setTimeout(() => { pinBuffer = ''; updateDots(); document.getElementById('pin-label').textContent = ''; }, 800);
-    }
-  } else if (pinMode === 'change2') {
-    if (!pinTemp) {
-      pinTemp = pinBuffer; pinBuffer = ''; pinMode = 'confirm-change';
-      document.getElementById('pin-sub').textContent = 'Confirmez le nouveau PIN';
-      document.getElementById('pin-label').textContent = '';
-      updateDots();
-    }
-  } else if (pinMode === 'confirm-change') {
-    if (pinBuffer === pinTemp) {
-      savedPin = pinBuffer;
-      localStorage.setItem(PIN_KEY, savedPin);
-      document.getElementById('pin-screen').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-      pinBuffer = ''; pinMode = 'unlock';
-      showToast('PIN modifié avec succès');
-    } else {
-      updateDots('error');
-      document.getElementById('pin-label').textContent = 'Les codes ne correspondent pas.';
-      setTimeout(() => { pinBuffer = ''; pinTemp = ''; pinMode = 'change2'; updateDots(); document.getElementById('pin-sub').textContent = 'Nouveau code PIN'; document.getElementById('pin-label').textContent = ''; }, 900);
-    }
-  }
-}
-
 function lockApp() {
   document.getElementById('app').classList.add('hidden');
   document.getElementById('pin-screen').classList.remove('hidden');
-  pinMode = 'unlock';
-  pinBuffer = '';
-  document.getElementById('pin-sub').textContent = 'Entrez votre code PIN';
-  document.getElementById('pin-setup-hint').textContent = '';
-  document.getElementById('pin-label').textContent = '';
+  pinMode='unlock'; pinBuf='';
+  document.getElementById('pin-sub').textContent='Entrez votre code PIN';
+  document.getElementById('pin-hint').textContent='';
+  document.getElementById('pin-label').textContent='';
   updateDots();
 }
-
 function startPinChange() {
   document.getElementById('app').classList.add('hidden');
   document.getElementById('pin-screen').classList.remove('hidden');
-  pinMode = 'change1';
-  pinBuffer = ''; pinTemp = '';
-  document.getElementById('pin-sub').textContent = 'Code PIN actuel';
-  document.getElementById('pin-setup-hint').textContent = '';
-  document.getElementById('pin-label').textContent = '';
+  pinMode='change1'; pinBuf=''; pinTemp='';
+  document.getElementById('pin-sub').textContent='Code PIN actuel';
+  document.getElementById('pin-hint').textContent='';
+  document.getElementById('pin-label').textContent='';
   updateDots();
 }
 
+// NAV
 function showScreen(name, btn) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (name === 'patients') renderPatients();
-  if (name === 'reglages') { document.getElementById('seuil-input').value = seuil; }
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='patients') renderPatients();
+  if(name==='reglages') document.getElementById('seuil-input').value=seuil;
 }
 
 function saveSeuil(v) {
-  seuil = parseFloat(v) || 5;
-  localStorage.setItem(SEUIL_KEY, seuil);
-  document.getElementById('stat-seuil').textContent = seuil + ' km';
-  showToast('Seuil mis à jour : ' + seuil + ' km');
+  seuil=parseFloat(v)||5;
+  localStorage.setItem(SEK,seuil);
+  document.getElementById('stat-seuil').textContent=seuil+' km';
+  showToast('Seuil : '+seuil+' km ✓');
 }
 
+// EXPORT / IMPORT
+function exportData() {
+  if (!patients.length) { showToast('Aucun patient à exporter'); return; }
+  const blob = new Blob([JSON.stringify({version:1, exported:new Date().toISOString(), patients},null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'infiroute-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('Export réussi — '+patients.length+' patients ✓');
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type='file'; input.accept='.json';
+  input.onchange = e => {
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload = ev => {
+      try {
+        const data=JSON.parse(ev.target.result);
+        if (!data.patients||!Array.isArray(data.patients)) throw new Error();
+        if (!confirm('Importer '+data.patients.length+' patients ?\nCela remplacera votre base actuelle ('+patients.length+' patients).')) return;
+        patients=data.patients;
+        localStorage.setItem(SK,JSON.stringify(patients));
+        renderPatients();
+        showToast('Import réussi — '+patients.length+' patients ✓');
+      } catch(e){ showToast('Fichier invalide ou corrompu'); }
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(input); input.click(); document.body.removeChild(input);
+}
+
+// GEO
 async function geocode(address) {
-  const q = encodeURIComponent(address + ', La Réunion');
-  const r = await fetch('https://nominatim.openstreetmap.org/search?q=' + q + '&format=json&limit=1&countrycodes=re', {headers: {'Accept-Language': 'fr'}});
-  const d = await r.json();
-  if (d.length > 0) return {lat: parseFloat(d[0].lat), lon: parseFloat(d[0].lon), display: d[0].display_name};
-  const r2 = await fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(address) + '&format=json&limit=1', {headers: {'Accept-Language': 'fr'}});
-  const d2 = await r2.json();
-  if (d2.length > 0) return {lat: parseFloat(d2[0].lat), lon: parseFloat(d2[0].lon), display: d2[0].display_name};
-  throw new Error('Adresse non trouvée');
+  const h={'Accept-Language':'fr'};
+  let r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(address+', La Réunion')+'&format=json&limit=1&countrycodes=re',{headers:h});
+  let d=await r.json();
+  if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
+  r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(address)+'&format=json&limit=1',{headers:h});
+  d=await r.json();
+  if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
+  throw new Error('not found');
 }
 
-function haversine(la1, lo1, la2, lo2) {
-  const R = 6371, dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180;
-  const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+function haversine(a,b,c,d){
+  const R=6371,dA=(c-a)*Math.PI/180,dB=(d-b)*Math.PI/180;
+  const x=Math.sin(dA/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dB/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
 
-function initials(name) {
-  return name.split(' ').map(w => w[0] || '').join('').substring(0,2).toUpperCase();
-}
+function initials(n){return n.split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();}
 
+// SEARCH
 async function doSearch() {
-  const addr = document.getElementById('new-addr').value.trim();
-  if (!addr) return;
-  const area = document.getElementById('result-area');
-  const st = document.getElementById('geo-status');
-  area.innerHTML = ''; st.style.display = 'block'; st.textContent = 'Localisation en cours...';
+  const addr=document.getElementById('new-addr').value.trim(); if(!addr) return;
+  const area=document.getElementById('result-area'),st=document.getElementById('geo-status');
+  area.innerHTML=''; st.style.display='block'; st.textContent='Localisation en cours...';
   try {
-    const geo = await geocode(addr);
-    st.style.display = 'none';
-    if (patients.length === 0) {
-      area.innerHTML = `<div class="result-warn"><div class="res-header"><div class="res-icon icon-warn">!</div><div><div class="res-verdict verdict-warn">Aucun patient en base</div><div style="font-size:12px;color:var(--text2);margin-top:2px;">Ajoutez des patients d'abord</div></div></div></div>`;
+    const geo=await geocode(addr); st.style.display='none';
+    if(!patients.length){
+      area.innerHTML=`<div class="result-warn"><div class="res-header"><div class="res-icon icon-warn">!</div><div><div class="res-verdict verdict-warn">Aucun patient en base</div><div style="font-size:12px;color:var(--text2);margin-top:2px;">Ajoutez des patients d'abord</div></div></div></div>`;
       return;
     }
-    const dists = patients.map(p => ({...p, dist: haversine(geo.lat, geo.lon, p.lat, p.lon)})).sort((a,b) => a.dist - b.dist);
-    const proches = dists.filter(p => p.dist <= seuil);
-    const plusProche = dists[0];
-    const addrShort = geo.display.split(',').slice(0,2).join(',');
-
-    if (proches.length > 0) {
-      const cards = proches.map(p => `
-        <div class="pat-row">
-          <div class="pat-av">${initials(p.name)}</div>
-          <div><div class="pat-nm">${p.name}</div><div class="pat-ds">${p.dist.toFixed(1)} km · ${p.addr}</div></div>
-          <span class="pat-badge badge-ok">Proche</span>
-        </div>`).join('');
-      area.innerHTML = `<div class="result-ok">
+    const dists=patients.map(p=>({...p,dist:haversine(geo.lat,geo.lon,p.lat,p.lon)})).sort((a,b)=>a.dist-b.dist);
+    const proches=dists.filter(p=>p.dist<=seuil), pp=dists[0];
+    const short=geo.display.split(',').slice(0,2).join(',');
+    if(proches.length){
+      area.innerHTML=`<div class="result-ok">
         <div class="res-header"><div class="res-icon icon-ok">✓</div>
         <div><div class="res-verdict verdict-ok">Sur le trajet !</div>
         <div style="font-size:12px;color:var(--text2);margin-top:2px;">${proches.length} patient${proches.length>1?'s':''} dans un rayon de ${seuil} km</div></div></div>
-        <div class="res-detail">${addrShort}</div>${cards}</div>`;
+        <div class="res-detail">${short}</div>
+        ${proches.map(p=>`<div class="pat-row"><div class="pat-av">${initials(p.name)}</div><div><div class="pat-nm">${p.name}</div><div class="pat-ds">${p.dist.toFixed(1)} km · ${p.addr}</div></div><span class="pat-badge badge-ok">Proche</span></div>`).join('')}
+      </div>`;
     } else {
-      area.innerHTML = `<div class="result-ko">
+      area.innerHTML=`<div class="result-ko">
         <div class="res-header"><div class="res-icon icon-ko">✗</div>
         <div><div class="res-verdict verdict-ko">Pas sur le trajet</div>
         <div style="font-size:12px;color:var(--text2);margin-top:2px;">Aucun patient dans un rayon de ${seuil} km</div></div></div>
-        <div class="res-detail">${addrShort}</div>
-        <div class="pat-row">
-          <div class="pat-av">${initials(plusProche.name)}</div>
-          <div><div class="pat-nm">+ proche : ${plusProche.name}</div><div class="pat-ds">${plusProche.dist.toFixed(1)} km · ${plusProche.addr}</div></div>
-          <span class="pat-badge badge-ref">Réf.</span>
-        </div></div>`;
+        <div class="res-detail">${short}</div>
+        <div class="pat-row"><div class="pat-av">${initials(pp.name)}</div><div><div class="pat-nm">+ proche : ${pp.name}</div><div class="pat-ds">${pp.dist.toFixed(1)} km · ${pp.addr}</div></div><span class="pat-badge badge-ref">Réf.</span></div>
+      </div>`;
     }
-  } catch(e) {
-    st.style.display = 'none';
-    area.innerHTML = `<div class="result-warn"><div class="res-header"><div class="res-icon icon-warn">?</div><div class="res-verdict verdict-warn">Adresse non trouvée</div></div><div class="res-detail">Précisez la ville (ex: "12 rue X, Saint-Denis").</div></div>`;
+  } catch(e){
+    st.style.display='none';
+    area.innerHTML=`<div class="result-warn"><div class="res-header"><div class="res-icon icon-warn">?</div><div class="res-verdict verdict-warn">Adresse non trouvée</div></div><div class="res-detail">Précisez la ville (ex: "12 rue X, Saint-Denis").</div></div>`;
   }
 }
 
+// PATIENTS
 async function addPatient() {
-  const name = document.getElementById('pat-name').value.trim();
-  const addr = document.getElementById('pat-addr').value.trim();
-  if (!name || !addr) { showToast('Remplissez tous les champs'); return; }
-  const st = document.getElementById('add-geo-status');
-  st.style.display = 'block'; st.style.color = 'var(--gold)'; st.textContent = 'Localisation en cours...';
+  const name=document.getElementById('pat-name').value.trim(), addr=document.getElementById('pat-addr').value.trim();
+  if(!name||!addr){showToast('Remplissez tous les champs');return;}
+  const st=document.getElementById('add-geo-status');
+  st.style.display='block'; st.style.color='var(--gold)'; st.textContent='Localisation en cours...';
   try {
-    const geo = await geocode(addr);
-    st.style.display = 'none';
-    patients.push({id: Date.now(), name, addr, lat: geo.lat, lon: geo.lon});
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-    document.getElementById('pat-name').value = '';
-    document.getElementById('pat-addr').value = '';
-    renderPatients();
-    showToast('Patient ajouté');
-  } catch(e) {
-    st.style.color = '#f87171'; st.textContent = 'Adresse introuvable — soyez plus précis.';
-  }
+    const geo=await geocode(addr); st.style.display='none';
+    patients.push({id:Date.now(),name,addr,lat:geo.lat,lon:geo.lon});
+    localStorage.setItem(SK,JSON.stringify(patients));
+    document.getElementById('pat-name').value='';
+    document.getElementById('pat-addr').value='';
+    renderPatients(); showToast('Patient ajouté ✓');
+  } catch(e){ st.style.color='#f87171'; st.textContent='Adresse introuvable — soyez plus précis.'; }
 }
 
-function deletePatient(id) {
-  if (!confirm('Supprimer ce patient ?')) return;
-  patients = patients.filter(p => p.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-  renderPatients();
-  showToast('Patient supprimé');
+function deletePatient(id){
+  if(!confirm('Supprimer ce patient ?')) return;
+  patients=patients.filter(p=>p.id!==id);
+  localStorage.setItem(SK,JSON.stringify(patients));
+  renderPatients(); showToast('Patient supprimé');
 }
 
-function renderPatients() {
-  const list = document.getElementById('patients-list');
-  document.getElementById('stat-count').textContent = patients.length;
-  document.getElementById('stat-seuil').textContent = seuil + ' km';
-  if (patients.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-ico">📋</div><div class="empty-txt">Aucun patient enregistré.<br>Ajoutez votre premier patient ci-dessus.</div></div>`;
+function renderPatients(){
+  const list=document.getElementById('patients-list');
+  document.getElementById('stat-count').textContent=patients.length;
+  document.getElementById('stat-seuil').textContent=seuil+' km';
+  if(!patients.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-ico">📋</div><div class="empty-txt">Aucun patient enregistré.<br>Ajoutez votre premier patient ci-dessus.</div></div>`;
     return;
   }
-  list.innerHTML = patients.map(p => `
+  list.innerHTML=patients.map(p=>`
     <div class="pat-card">
       <div class="pat-av">${initials(p.name)}</div>
       <div class="pat-card-info">
@@ -520,25 +476,21 @@ function renderPatients() {
     </div>`).join('');
 }
 
-function clearAll() {
-  if (!confirm('Effacer tous les patients ?')) return;
-  patients = [];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-  renderPatients();
-  showToast('Base effacée');
+function clearAll(){
+  if(!confirm('Effacer tous les patients ?')) return;
+  patients=[]; localStorage.setItem(SK,JSON.stringify(patients));
+  renderPatients(); showToast('Base effacée');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-document.getElementById('new-addr').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
-document.getElementById('pat-addr').addEventListener('keydown', e => { if (e.key === 'Enter') addPatient(); });
-
-initPin();
-renderPatients();
+document.getElementById('new-addr').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+document.getElementById('pat-addr').addEventListener('keydown',e=>{if(e.key==='Enter')addPatient();});
+initPin(); renderPatients();
 </script>
 </body>
 </html>
