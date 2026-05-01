@@ -465,7 +465,8 @@ async function addPatient() {
   st.style.display='block'; st.style.color='var(--gold)'; st.textContent='Localisation en cours...';
   try {
     const geo=await geocode(addr); st.style.display='none';
-    patients.push({id:Date.now(),name,addr,lat:geo.lat,lon:geo.lon});
+    const cleanAddr = (addr.startsWith("http") || addr.startsWith("https")) ? geo.display.split(",").slice(0,4).join(",").trim() : addr;
+    patients.push({id:Date.now(),name,addr:cleanAddr,lat:geo.lat,lon:geo.lon});
     localStorage.setItem(SK,JSON.stringify(patients));
     document.getElementById('pat-name').value='';
     document.getElementById('pat-addr').value='';
