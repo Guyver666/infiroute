@@ -379,12 +379,36 @@ function importData() {
 // GEO
 async function geocode(address) {
   const h={'Accept-Language':'fr'};
+
+  // 1. Lien Google Maps → extraire coordonnées GPS directement
+  const gmCoords = address.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (gmCoords) {
+    const lat=parseFloat(gmCoords[1]), lon=parseFloat(gmCoords[2]);
+    // Reverse geocode pour obtenir l'adresse lisible
+    try {
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:h});
+      const d=await r.json();
+      return {lat, lon, display: d.display_name || `${lat}, ${lon}`};
+    } catch(e) { return {lat, lon, display:`${lat}, ${lon}`}; }
+  }
+
+  // 2. Coordonnées GPS brutes ex: "-20.9499, 55.6213"
+  const rawCoords = address.match(/^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$/);
+  if (rawCoords) {
+    const lat=parseFloat(rawCoords[1]), lon=parseFloat(rawCoords[2]);
+    return {lat, lon, display:`${lat}, ${lon}`};
+  }
+
+  // 3. Adresse texte → OpenStreetMap
   let r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(address+', La Réunion')+'&format=json&limit=1&countrycodes=re',{headers:h});
   let d=await r.json();
   if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
+
+  // 4. Sans forcer La Réunion
   r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(address)+'&format=json&limit=1',{headers:h});
   d=await r.json();
   if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
+
   throw new Error('not found');
 }
 
@@ -429,7 +453,7 @@ async function doSearch() {
     }
   } catch(e){
     st.style.display='none';
-    area.innerHTML=`<div class="result-warn"><div class="res-header"><div class="res-icon icon-warn">?</div><div class="res-verdict verdict-warn">Adresse non trouvée</div></div><div class="res-detail">Précisez la ville (ex: "12 rue X, Saint-Denis").</div></div>`;
+    area.innerHTML=`<div class="result-warn"><div class="res-header"><div class="res-icon icon-warn">?</div><div><div class="res-verdict verdict-warn">Adresse non trouv00e9e</div><div style="font-size:12px;color:var(--text2);margin-top:2px;">Essayez un autre format</div></div></div><div class="res-detail">2713 Lien Google Maps (coller directement)<br>2713 Adresse texte : "25 rue X, Sainte-Suzanne"<br>2713 Coordonn00e9es GPS : "-20.9499, 55.6213"</div></div>`;
   }
 }
 
