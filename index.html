@@ -179,8 +179,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
           <input class="field-input" id="pat-name" placeholder="Nom Prénom"/>
         </div>
         <div class="field">
-          <label class="field-label">Adresse</label>
-          <input class="field-input" id="pat-addr" placeholder="12 rue des Fleurs, Saint-Denis"/>
+          <label class="field-label">Localisation <span style="color:var(--text3);font-size:9px;font-weight:400;letter-spacing:0">(adresse, lien Google Maps ou coordonnées GPS)</span></label>
+          <input class="field-input" id="pat-addr" placeholder="Ex: 544 chemin Sarrabe, Saint-André ou lien Google Maps" oninput="onAddrInput()"/>
+        </div>
+        <div class="field" id="manual-addr-field" style="display:none;">
+          <label class="field-label">Adresse à afficher <span style="color:var(--gold3);font-size:9px;">(si lien/coordonnées utilisés)</span></label>
+          <input class="field-input" id="pat-addr-manual" placeholder="Ex: 544 chemin Sarrabe, Saint-André"/>
         </div>
         <div class="geo-status" id="add-geo-status"></div>
         <button class="btn-add" onclick="addPatient()">+ Ajouter le patient</button>
@@ -377,34 +381,72 @@ function importData() {
 }
 
 // GEO
-async function geocode(address) {
+async function geocode(address, manualAddr) {
   const h={'Accept-Language':'fr'};
 
   // 1. Lien Google Maps → extraire coordonnées GPS directement
   const gmCoords = address.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
   if (gmCoords) {
     const lat=parseFloat(gmCoords[1]), lon=parseFloat(gmCoords[2]);
-    // Reverse geocode pour obtenir l'adresse lisible
     try {
       const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:h});
       const d=await r.json();
-      return {lat, lon, display: d.display_name || `${lat}, ${lon}`};
-    } catch(e) { return {lat, lon, display:`${lat}, ${lon}`}; }
+      const display = manualAddr || d.display_name || `${lat}, ${lon}`;
+      return {lat, lon, display};
+    } catch(e) { return {lat, lon, display: manualAddr || `${lat}, ${lon}`}; }
   }
 
-  // 2. Coordonnées GPS brutes ex: "-20.9499, 55.6213"
+  // 2. Lien Mappy ou autre avec coordonnées dans l'URL
+  const mapCoords = address.match(/(-?\d{2,3}\.\d{3,})[,\/%](-?\d{2,3}\.\d{3,})/);
+  if (mapCoords) {
+    const lat=parseFloat(mapCoords[1]), lon=parseFloat(mapCoords[2]);
+    try {
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:h});
+      const d=await r.json();
+      return {lat, lon, display: manualAddr || d.display_name || `${lat}, ${lon}`};
+    } catch(e) { return {lat, lon, display: manualAddr || `${lat}, ${lon}`}; }
+  }
+
+  // 3. Coordonnées GPS brutes ex: "-20.9499, 55.6213"
   const rawCoords = address.match(/^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$/);
   if (rawCoords) {
     const lat=parseFloat(rawCoords[1]), lon=parseFloat(rawCoords[2]);
-    return {lat, lon, display:`${lat}, ${lon}`};
+    try {
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{headers:h});
+      const d=await r.json();
+      return {lat, lon, display: manualAddr || d.display_name || `${lat}, ${lon}`};
+    } catch(e) { return {lat, lon, display: manualAddr || `${lat}, ${lon}`}; }
   }
 
-  // 3. Adresse texte → OpenStreetMap
+  // 4. Adresse texte → supprimer lieu-dit potentiel et tenter OpenStreetMap
+  const simplify = (a) => a.replace(/bras des \w+|fond de\s*\w*|chemin\s+\w+\s+(?=\d)/gi,'').trim();
+
+  // Tentative 1: adresse complète + Réunion
   let r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(address+', La Réunion')+'&format=json&limit=1&countrycodes=re',{headers:h});
   let d=await r.json();
   if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
 
-  // 4. Sans forcer La Réunion
+  // Tentative 2: simplifier l'adresse (enlever lieu-dit)
+  const simple = simplify(address);
+  if(simple !== address) {
+    r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(simple+', La Réunion')+'&format=json&limit=1&countrycodes=re',{headers:h});
+    d=await r.json();
+    if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
+  }
+
+  // Tentative 3: API Photon (meilleure tolérance)
+  try {
+    r=await fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(address+' Réunion')+'&limit=1&lang=fr');
+    d=await r.json();
+    if(d.features && d.features.length) {
+      const f=d.features[0];
+      const props=f.properties;
+      const display=[props.name,props.street,props.city,props.country].filter(Boolean).join(', ');
+      return {lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],display};
+    }
+  } catch(e){}
+
+  // Tentative 4: sans forcer La Réunion
   r=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(address)+'&format=json&limit=1',{headers:h});
   d=await r.json();
   if(d.length) return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),display:d[0].display_name};
@@ -458,20 +500,43 @@ async function doSearch() {
 }
 
 // PATIENTS
+// Affiche/cache le champ adresse manuelle selon ce qui est tapé
+function onAddrInput() {
+  const val = document.getElementById('pat-addr').value.trim();
+  const isLink = val.startsWith('http');
+  const isCoords = /^-?\d+\.\d+[,\s]+-?\d+\.\d+$/.test(val);
+  const field = document.getElementById('manual-addr-field');
+  field.style.display = (isLink || isCoords) ? 'block' : 'none';
+}
+
 async function addPatient() {
-  const name=document.getElementById('pat-name').value.trim(), addr=document.getElementById('pat-addr').value.trim();
+  const name=document.getElementById('pat-name').value.trim();
+  const addr=document.getElementById('pat-addr').value.trim();
+  const manualAddr=document.getElementById('pat-addr-manual').value.trim();
   if(!name||!addr){showToast('Remplissez tous les champs');return;}
   const st=document.getElementById('add-geo-status');
   st.style.display='block'; st.style.color='var(--gold)'; st.textContent='Localisation en cours...';
   try {
-    const geo=await geocode(addr); st.style.display='none';
-    const cleanAddr = (addr.startsWith("http") || addr.startsWith("https")) ? geo.display.split(",").slice(0,4).join(",").trim() : addr;
+    const geo=await geocode(addr, manualAddr||null);
+    st.style.display='none';
+    // Adresse à stocker : manuelle > adresse texte saisie > adresse du géocodage
+    const isLink = addr.startsWith('http');
+    const isCoords = /^-?\d+\.\d+[,\s]+-?\d+\.\d+$/.test(addr);
+    let cleanAddr;
+    if(manualAddr) cleanAddr = manualAddr;
+    else if(isLink || isCoords) cleanAddr = geo.display.split(',').slice(0,4).join(',').trim();
+    else cleanAddr = addr;
     patients.push({id:Date.now(),name,addr:cleanAddr,lat:geo.lat,lon:geo.lon});
     localStorage.setItem(SK,JSON.stringify(patients));
     document.getElementById('pat-name').value='';
     document.getElementById('pat-addr').value='';
+    document.getElementById('pat-addr-manual').value='';
+    document.getElementById('manual-addr-field').style.display='none';
     renderPatients(); showToast('Patient ajouté ✓');
-  } catch(e){ st.style.color='#f87171'; st.textContent='Adresse introuvable — soyez plus précis.'; }
+  } catch(e){
+    st.style.color='#f87171';
+    st.textContent='Introuvable. Colle les coordonnées GPS depuis Google Maps ou Mappy.';
+  }
 }
 
 function deletePatient(id){
