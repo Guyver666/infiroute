@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-title" content="Infiroute"/>
 <title>Infiroute</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -115,6 +117,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .hint{font-size:11px;color:var(--text3);margin-top:10px;line-height:1.6;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border2);border-radius:24px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:all .3s;z-index:9999;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+#map-modal{position:fixed;inset:0;z-index:500;background:var(--bg);display:none;flex-direction:column;}
+#map-modal.open{display:flex;}
+.map-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:13px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.map-title{font-family:'Cinzel',serif;font-size:14px;font-weight:600;color:var(--gold2);flex:1;}
+.map-close{background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer;padding:4px 8px;}
+.map-subtitle{font-size:11px;color:var(--text2);margin-top:2px;}
+#map-container{flex:1;width:100%;}
+.map-legend{background:var(--bg2);border-top:1px solid var(--border);padding:10px 16px;display:flex;gap:16px;flex-shrink:0;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dot-target{background:#ef4444;}
+.dot-proche{background:#a855f7;}
+.dot-loin{background:#6b7280;}
 </style>
 </head>
 <body>
@@ -477,20 +493,29 @@ async function doSearch() {
     const proches=dists.filter(p=>p.dist<=seuil), pp=dists[0];
     const short=geo.display.split(',').slice(0,2).join(',');
     if(proches.length){
+      // Store for map access
+      window._lastSearchGeo = geo; window._lastSearchDists = dists; window._lastSearchLabel = short;
       area.innerHTML=`<div class="result-ok">
         <div class="res-header"><div class="res-icon icon-ok">✓</div>
         <div><div class="res-verdict verdict-ok">Sur le trajet !</div>
         <div style="font-size:12px;color:var(--text2);margin-top:2px;">${proches.length} patient${proches.length>1?'s':''} dans un rayon de ${seuil} km</div></div></div>
         <div class="res-detail">${short}</div>
         ${proches.map(p=>`<div class="pat-row"><div class="pat-av">${initials(p.name)}</div><div><div class="pat-nm">${p.name}</div><div class="pat-ds">${p.dist.toFixed(1)} km · ${p.addr}</div></div><span class="pat-badge badge-ok">Proche</span></div>`).join('')}
+        <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);">
+          <button onclick="openMapFromSearch(window._lastSearchGeo.lat,window._lastSearchGeo.lon,window._lastSearchLabel,window._lastSearchDists)" style="width:100%;padding:10px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.4);border-radius:8px;color:#c084fc;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🗺 Voir sur la carte</button>
+        </div>
       </div>`;
     } else {
+      window._lastSearchGeo = geo; window._lastSearchDists = dists; window._lastSearchLabel = short;
       area.innerHTML=`<div class="result-ko">
         <div class="res-header"><div class="res-icon icon-ko">✗</div>
         <div><div class="res-verdict verdict-ko">Pas sur le trajet</div>
         <div style="font-size:12px;color:var(--text2);margin-top:2px;">Aucun patient dans un rayon de ${seuil} km</div></div></div>
         <div class="res-detail">${short}</div>
         <div class="pat-row"><div class="pat-av">${initials(pp.name)}</div><div><div class="pat-nm">+ proche : ${pp.name}</div><div class="pat-ds">${pp.dist.toFixed(1)} km · ${pp.addr}</div></div><span class="pat-badge badge-ref">Réf.</span></div>
+        <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);">
+          <button onclick="openMapFromSearch(window._lastSearchGeo.lat,window._lastSearchGeo.lon,window._lastSearchLabel,window._lastSearchDists)" style="width:100%;padding:10px;background:rgba(107,114,128,0.15);border:1px solid rgba(107,114,128,0.4);border-radius:8px;color:#9ca3af;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🗺 Voir sur la carte</button>
+        </div>
       </div>`;
     }
   } catch(e){
@@ -562,6 +587,7 @@ function renderPatients(){
         <div class="pat-card-addr">${p.addr}</div>
         <div class="pat-card-coord">${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}</div>
       </div>
+      <button class="map-pat-btn" onclick="openMapForPatient(${p.id})" style="background:none;border:none;color:var(--violet2);cursor:pointer;padding:6px;font-size:16px;flex-shrink:0;" title="Voir sur la carte">🗺</button>
       <button class="del-btn" onclick="deletePatient(${p.id})">✕</button>
     </div>`).join('');
 }
@@ -580,7 +606,97 @@ function showToast(msg){
 
 document.getElementById('new-addr').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
 document.getElementById('pat-addr').addEventListener('keydown',e=>{if(e.key==='Enter')addPatient();});
+
+// ── CARTE ─────────────────────────────────────────
+let mapInstance = null;
+
+function openMap(targetLat, targetLon, targetLabel, contextPatients) {
+  const modal = document.getElementById('map-modal');
+  const titleEl = document.getElementById('map-title');
+  const subEl = document.getElementById('map-subtitle');
+  modal.classList.add('open');
+  titleEl.textContent = 'Carte — ' + targetLabel;
+  subEl.textContent = contextPatients ? contextPatients.length + ' patient(s) affiché(s)' : 'Position du patient';
+
+  setTimeout(() => {
+    if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+
+    mapInstance = L.map('map-container', {zoomControl: true}).setView([targetLat, targetLon], 14);
+
+    // Tuiles sombres CartoDB
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CartoDB',
+      subdomains: 'abcd', maxZoom: 19
+    }).addTo(mapInstance);
+
+    // Marqueur cible (rouge)
+    const redIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:18px;height:18px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 0 12px rgba(239,68,68,0.7);"></div>',
+      iconSize: [18,18], iconAnchor: [9,9]
+    });
+    L.marker([targetLat, targetLon], {icon: redIcon})
+      .addTo(mapInstance)
+      .bindPopup('<b>' + targetLabel + '</b>', {className:'dark-popup'})
+      .openPopup();
+
+    // Marqueurs patients
+    if (contextPatients && contextPatients.length > 0) {
+      const bounds = [[targetLat, targetLon]];
+      contextPatients.forEach(p => {
+        const proche = p.dist !== undefined ? p.dist <= seuil : false;
+        const color = p.dist !== undefined ? (proche ? '#a855f7' : '#6b7280') : '#a855f7';
+        const glow = proche ? 'rgba(168,85,247,0.6)' : 'rgba(107,114,128,0.3)';
+        const size = proche ? 16 : 12;
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 0 10px ${glow};display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff;font-family:serif;">${initials(p.name)}</div>`,
+          iconSize: [size,size], iconAnchor: [size/2,size/2]
+        });
+        const distTxt = p.dist !== undefined ? ' · ' + p.dist.toFixed(1) + ' km' : '';
+        L.marker([p.lat, p.lon], {icon})
+          .addTo(mapInstance)
+          .bindPopup('<b>' + p.name + '</b>' + distTxt + '<br><small>' + p.addr + '</small>');
+        bounds.push([p.lat, p.lon]);
+      });
+      if (bounds.length > 1) mapInstance.fitBounds(bounds, {padding: [30,30]});
+    }
+  }, 100);
+}
+
+function closeMap() {
+  document.getElementById('map-modal').classList.remove('open');
+  if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+}
+
+function openMapFromSearch(targetLat, targetLon, targetLabel, allDists) {
+  openMap(targetLat, targetLon, targetLabel, allDists);
+}
+
+function openMapForPatient(id) {
+  const p = patients.find(x => x.id === id);
+  if (!p) return;
+  openMap(p.lat, p.lon, p.name, null);
+}
+
 initPin(); renderPatients();
 </script>
+
+<!-- MAP MODAL -->
+<div id="map-modal">
+  <div class="map-header">
+    <div>
+      <div class="map-title" id="map-title">Carte</div>
+      <div class="map-subtitle" id="map-subtitle"></div>
+    </div>
+    <button class="map-close" onclick="closeMap()">✕</button>
+  </div>
+  <div id="map-container"></div>
+  <div class="map-legend">
+    <div class="legend-item"><div class="legend-dot dot-target"></div>Nouvelle adresse</div>
+    <div class="legend-item"><div class="legend-dot dot-proche"></div>Patient proche</div>
+    <div class="legend-item"><div class="legend-dot dot-loin"></div>Patient éloigné</div>
+  </div>
+</div>
 </body>
 </html>
